@@ -1,6 +1,7 @@
 package database
 
 import (
+	"errors"
 	"moeCounter/utils"
 
 	"github.com/glebarez/sqlite"
@@ -22,7 +23,7 @@ func InitDB(dbFile string, debug bool) error {
 	// 确保数据库文件路径为绝对路径
 	absDBFile, err := utils.EnsureAbsolutePath(dbFile)
 	if err != nil {
-		return err
+		return errors.New("数据库路径处理失败")
 	}
 
 	config := &gorm.Config{}
@@ -35,11 +36,15 @@ func InitDB(dbFile string, debug bool) error {
 	}
 	DB, err = gorm.Open(sqlite.Open(absDBFile), config)
 	if err != nil {
-		return err
+		return errors.New("数据库连接失败")
 	}
 
 	// 自动迁移表结构
-	return DB.AutoMigrate(&Counter{})
+	if err := DB.AutoMigrate(&Counter{}); err != nil {
+		return errors.New("数据库表结构初始化失败")
+	}
+	
+	return nil
 }
 
 // 增加计数并返回当前值

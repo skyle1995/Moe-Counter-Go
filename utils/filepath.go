@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"errors"
 	"os"
 	"path/filepath"
 )
@@ -16,7 +17,7 @@ func EnsureAbsolutePath(path string) (string, error) {
 	// 获取当前工作目录
 	currentDir, err := os.Getwd()
 	if err != nil {
-		return "", err
+		return "", errors.New("获取当前工作目录失败")
 	}
 	
 	// 将相对路径转换为绝对路径
@@ -34,7 +35,7 @@ func EnsureAbsolutePathWithBase(path, baseDir string) (string, error) {
 	// 确保基础目录是绝对路径
 	absBaseDir, err := EnsureAbsolutePath(baseDir)
 	if err != nil {
-		return "", err
+		return "", errors.New("基础目录路径处理失败")
 	}
 	
 	// 将相对路径转换为绝对路径
@@ -45,7 +46,7 @@ func EnsureAbsolutePathWithBase(path, baseDir string) (string, error) {
 func GetExecutableDir() (string, error) {
 	execPath, err := os.Executable()
 	if err != nil {
-		return "", err
+		return "", errors.New("获取可执行文件路径失败")
 	}
 	return filepath.Dir(execPath), nil
 }
