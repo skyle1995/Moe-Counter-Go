@@ -1,6 +1,8 @@
 package database
 
 import (
+	"moeCounter/utils"
+
 	"github.com/glebarez/sqlite"
 	"gorm.io/gorm"
 	gormlogger "gorm.io/gorm/logger"
@@ -17,7 +19,12 @@ type Counter struct {
 
 // 初始化数据库连接
 func InitDB(dbFile string, debug bool) error {
-	var err error
+	// 确保数据库文件路径为绝对路径
+	absDBFile, err := utils.EnsureAbsolutePath(dbFile)
+	if err != nil {
+		return err
+	}
+
 	config := &gorm.Config{}
 	if debug {
 		// 调试模式下显示详细日志
@@ -26,7 +33,7 @@ func InitDB(dbFile string, debug bool) error {
 		// 非调试模式禁用日志
 		config.Logger = gormlogger.Default.LogMode(gormlogger.Silent)
 	}
-	DB, err = gorm.Open(sqlite.Open(dbFile), config)
+	DB, err = gorm.Open(sqlite.Open(absDBFile), config)
 	if err != nil {
 		return err
 	}
